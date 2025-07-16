@@ -2,7 +2,7 @@
 
 
 
-## Bug #1 – dubbelbokning
+## 1. Bug #1 – dubbelbokning
 
 ### Uppgift:
 > Tidsöverlapp accepteras ibland. Hitta roten och åtgärda så att testet `CreateBooking_RejectsOverlap2` passerar.
@@ -18,7 +18,7 @@ Villkoret är för strikt eftersom det inte tillåter att en bokning får börja
 ```
 return _repo.GetAll().Any(b => b.RoomId == roomId && !(b.To <= from || b.From >= to));
 ```
-## Bug #2 – DI‑kringgås
+## 2. Bug #2 – DI‑kringgås
 
 ### Uppgift:
 >   `BookingController` instansierar `BookingService` direkt. Flytta till DI‑containern så att beroenden injiceras.
@@ -38,3 +38,30 @@ public BookingsController(BookingService service)
 }
 ```
 Därefter registrerades både BookingService och BookingRepository i DI-containern i Program.cs.
+
+## 3. Ny funktion – avboka
+
+### Uppgift:
+>  Implementera `DELETE /api/bookings/{id}` med 204 No Content på lyckad avbokning och 404 om id saknas.
+
+### Lösning
+En ny delete-metod Cancel(int id) har lagts till i controllern. Saknas bokningen returneras 404 Not Found. Finns den, avbokas den och returnerar 204 No Content:
+```
+   [HttpDelete("{id:int}")]
+   public IActionResult Cancel(int id)
+   {
+       var existing = _service.GetById(id);
+
+       if (existing == null)
+       {
+           return NotFound();
+       }
+
+       _service.Cancel(id);
+       return NoContent();
+   }
+```
+
+
+
+
