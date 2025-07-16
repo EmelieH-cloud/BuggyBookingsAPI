@@ -26,8 +26,7 @@ namespace BookingsApi.Services
         /// </summary>
         public bool HasOverlap(int roomId, DateTime from, DateTime to)
         {
-            //  return _repo.GetAll().Any(b => b.RoomId == roomId && !(b.To <= from || b.From > to));
-
+            //return _repo.GetAll().Any(b => b.RoomId == roomId && !(b.To <= from || b.From > to));
             return _repo.GetAll().Any(b => b.RoomId == roomId && !(b.To <= from || b.From >= to));
         }
 
