@@ -2,7 +2,7 @@ using BookingsApi.Models;
 
 namespace BookingsApi.Repositories
 {
-    public class BookingRepository
+    public class BookingRepository : IBookingRepository
     {
         private static readonly List<Booking> _bookings = new();
         private static int _nextId = 1;

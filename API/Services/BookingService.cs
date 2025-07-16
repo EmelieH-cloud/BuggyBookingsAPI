@@ -3,7 +3,7 @@ using BookingsApi.Repositories;
 
 namespace BookingsApi.Services
 {
-    public class BookingService
+    public class BookingService : IBookingService
     {
         private readonly BookingRepository _repo;
 
