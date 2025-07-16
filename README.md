@@ -1,15 +1,13 @@
 # Buggy Bookings API
 
-- [Bug #1 – Dubbelbokning](#bug-1--dubbelbokning)
 
----
 
 ## Bug #1 – dubbelbokning
 
 ### Uppgift:
 > Tidsöverlapp accepteras ibland. Hitta roten och åtgärda så att testet `CreateBooking_RejectsOverlap2` passerar.
 
-### Lösning:
+### Lösning
 Testet `CreateBooking_RejectsOverlap2()` används för att kontrollera att bokningar som **slutar exakt när nästa börjar** (t.ex. slutar 12:00, nästa börjar 12:00) **inte räknas som ett tidsöverlapp**, de ska alltså vara tillåtna.
 
 I metoden `HasOverlap()` fanns följande logik:
@@ -20,3 +18,23 @@ Villkoret är för strikt eftersom det inte tillåter att en bokning får börja
 ```
 return _repo.GetAll().Any(b => b.RoomId == roomId && !(b.To <= from || b.From >= to));
 ```
+## Bug #2 – DI‑kringgås
+
+### Uppgift:
+>   `BookingController` instansierar `BookingService` direkt. Flytta till DI‑containern så att beroenden injiceras.
+
+### Lösning
+BookingService skapades tidigare direkt i kontrollern:
+```
+private readonly BookingService _service = new BookingService();
+```
+Koden ändrades så att den istället tar emot BookingService via en konstruktor:
+```
+private readonly BookingService _service;
+
+public BookingsController(BookingService service)
+{
+    _service = service;
+}
+```
+Därefter registrerades både BookingService och BookingRepository i DI-containern i Program.cs.
