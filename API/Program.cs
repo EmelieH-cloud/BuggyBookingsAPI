@@ -6,8 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add MVC controller support
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<BookingRepository>();
-builder.Services.AddSingleton<BookingService>();
+builder.Services.AddScoped<BookingService>();
+builder.Services.AddScoped<BookingRepository>();
 
 var app = builder.Build();
 
