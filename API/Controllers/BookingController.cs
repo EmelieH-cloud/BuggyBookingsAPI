@@ -8,7 +8,13 @@ namespace BookingsApi.Controllers
     [Route("api/[controller]")]
     public class BookingsController : ControllerBase
     {
-        private readonly BookingService _service = new BookingService();
+        private readonly BookingService _service;
+
+        public BookingsController(BookingService service)
+        {
+            _service = service;
+        }
+
 
         [HttpGet]
         public IActionResult GetAll()
