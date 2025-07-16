@@ -1,7 +1,5 @@
 # Buggy Bookings API
 
-
-
 ## 1. Bug #1 – dubbelbokning
 
 ### Uppgift:
@@ -61,6 +59,21 @@ En ny delete-metod Cancel(int id) har lagts till i controllern. Saknas bokningen
        return NoContent();
    }
 ```
+
+## 4. Refaktorera
+
+### Uppgift: 
+Inför `IBookingService` och `IBookingRepository`. 
+All överlappslogik ska finnas på **ett** ställe.  
+
+### Lösning
+Både BookingService och BookingRepository implementerar nu sina respektive interfaces, och controllern använder IBookingService.
+
+
+
+
+
+
 
 
 
