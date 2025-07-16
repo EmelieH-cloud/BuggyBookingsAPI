@@ -40,5 +40,20 @@ namespace BookingsApi.Controllers
             var created = _service.Create(booking);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
+
+        [HttpDelete("{id:int}")]
+        public IActionResult Cancel(int id)
+        {
+            var existing = _service.GetById(id);
+
+            if (existing == null)
+            {
+                return NotFound();
+            }
+
+            _service.Cancel(id);
+            return NoContent();
+        }
+
     }
 }
