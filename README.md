@@ -1,5 +1,14 @@
 # Buggy Bookings API
 
+## DI och DRY
+
+Projektet tillämpar Dependency Injection genom att BookingsController får IBookingService injicerat via konstruktorn, vilket möjliggör löst kopplade beroenden.
+BookingService är i sin tur beroende av IBookingRepository som hanterar datalagringen. Båda interfaces är registrerade med AddScoped i Program.cs.
+
+DRY-principen är tillämpad genom att all överlappslogik är samlad i en enda metod – HasOverlap() i BookingService.
+Controllern använder enbart Create() och låter HasOverlap() i BookingService avgöra om en bokning kan accepteras eller ej. Detta eliminerar duplicerad logik i enlighet med DRY. 
+
+---
 ## 1. Bug #1 – dubbelbokning
 
 ### Uppgift:
@@ -67,14 +76,38 @@ Inför `IBookingService` och `IBookingRepository`.
 All överlappslogik ska finnas på **ett** ställe.  
 
 ### Lösning
-Både BookingService och BookingRepository implementerar nu sina respektive interfaces, och controllern använder IBookingService.
+- Både BookingService och BookingRepository implementerar nu sina respektive interfaces, och controllern använder IBookingService.
 
+- Create-metoden i controllern ändrades från detta:
+```
+[HttpPost]
+public IActionResult Create([FromBody] Booking booking)
+{
+    if (_service.HasOverlap(booking.RoomId, booking.From, booking.To))
+    {
+        return Conflict("Booking overlaps an existing reservation.");
+    }
 
-
-
-
-
-
-
-
+    var created = _service.Create(booking);
+    return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+}
+```
+till detta:
+```
+[HttpPost]
+public IActionResult Create([FromBody] Booking booking)
+{
+    try
+    {
+        var created = _service.Create(booking);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Conflict(ex.Message);
+    }
+}
+```
+Nu frågar controllern inte om det finns en överlapp, den försöker bara skapa bokningen. Om BookingService upptäcker ett överlapp, kastar den ett fel.
+Resultatet blir att all överlappslogik finns på ett enda ställe (i service-lagret). 
 
